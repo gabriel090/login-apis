@@ -1,0 +1,22 @@
+//user login route
+$app->post('/login', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('username', 'password'))) {
+        $requestData = $request->getParsedBody();
+        $username = $requestData['username'];
+        $password = $requestData['password'];
+
+        $db = new DbOperation();
+
+        $responseData = array();
+
+        if ($db->userLogin($username, $password)) {
+            $responseData['error'] = false;
+            $responseData['user'] = $db->getUserByUsername($username);
+        } else {
+            $responseData['error'] = true;
+            $responseData['message'] = 'Invalid username or password';
+        }
+
+        $response->getBody()->write(json_encode($responseData));
+    }
+});
